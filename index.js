@@ -24,6 +24,7 @@ async function run() {
     const database = client.db("Travel-database");
     const plans = database.collection("plans");
     const Contact = database.collection("contact-us");
+    const Bookings = database.collection("bookings");
     // create a document to insert
 
     app.post("/addplan", async (req, res) => {
@@ -40,16 +41,49 @@ async function run() {
     app.get("/plans", async (req, res) => {
       const query = {};
       const cursor = await plans.find(query).toArray();
-      console.log(cursor);
+      // console.log(cursor);
       res.json(cursor);
     });
     app.get("/singleplan/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       const query = { _id: ObjectId(id) };
       const cursor = await plans.findOne(query);
       res.json(cursor);
-      console.log(cursor);
+      // console.log(cursor);
+    });
+
+    // order post
+    app.post("/addbooking", async (req, res) => {
+      // console.log(req.body);
+      const result = await Bookings.insertOne(req.body);
+      res.json(result);
+    });
+    //get All order
+    app.get("/allorders", async (req, res) => {
+      const cursor = Bookings.find({});
+      const result = await cursor.toArray();
+      res.send(result);
+      // console.log(result);
+    });
+
+    // my order get method
+    app.get("/myorders/:email", async (req, res) => {
+      const email = req.params.email;
+      // console.log(email);
+      const query = { email: email };
+      const cursor = await Bookings.find(query).toArray();
+      res.json(cursor);
+      // console.log(cursor);
+    });
+
+    //delete order
+    app.delete("/deleteorders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await Bookings.deleteOne(query);
+      console.log(result);
+      res.json(result);
     });
   } finally {
     // await client.close();
