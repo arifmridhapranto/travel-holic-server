@@ -49,15 +49,17 @@ async function run() {
       // console.log(id);
       const query = { _id: ObjectId(id) };
       const cursor = await plans.findOne(query);
-      res.json(cursor);
+      res.send(cursor);
       // console.log(cursor);
     });
 
     // order post
     app.post("/addbooking", async (req, res) => {
-      // console.log(req.body);
-      const result = await Bookings.insertOne(req.body);
+      const query = req.body;
+
+      const result = await Bookings.insertOne(query);
       res.json(result);
+      console.log(result);
     });
     //get All order
     app.get("/allorders", async (req, res) => {
@@ -84,6 +86,22 @@ async function run() {
       const result = await Bookings.deleteOne(query);
       console.log(result);
       res.json(result);
+    });
+
+    // update orders
+    app.put("/updatedorder/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const updatedInfo = req.body;
+      const query = { _id: ObjectId(id) };
+      const result = await Bookings.updateOne(query, {
+        $set: {
+          status: updatedInfo.status,
+        },
+      });
+
+      res.send(result);
+      console.log(result);
     });
   } finally {
     // await client.close();
